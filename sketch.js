@@ -35,7 +35,7 @@ function draw() {
   background(bg_img);  
 
   if(keyDown("RIGHT_ARROW")){
-    max.velocityX=2;
+    max.velocityX=3;
   }
   if(keyWentUp("RIGHT_ARROW")){
     max.velocityX=0;
@@ -54,7 +54,6 @@ function spawnGerms(){
         germ.scale=0.1
         germ.velocityX=-1
   }
-
   if(World.frameCount%300===0){
     var germ2= createSprite(1050,Math.round(random(300,490)), 50, 50);
         germ2.addImage("g2", germ2_img)
