@@ -5,6 +5,8 @@ var mask,mask_img
 var sanitizer,sanitizer_img
 var booster,booster_img
 var bg,bg_img
+var gameover,gameover_img
+var playagain,playagain_img
 var ground
 var germ1Group
 var germ2Group
@@ -13,21 +15,36 @@ var sanitizerGroup
 var boosterGroup
 var count=0
 var healthmeter=200
+var PLAY=1
+var END=0
+var gameState=PLAY
 
 function preload(){
   max_img = loadAnimation("images/max.png","images/max2.png","images/max3.png")
+  maxfall_img=loadImage("images/max4.png")
   germ_img = loadImage("images/germ.png")
   germ2_img = loadImage("images/germ2.png")
   mask_img = loadImage("images/mask.png")
   sanitizer_img= loadImage("images/sanitizer.png")
   booster_img = loadImage("images/booster.png")
   bg_img = loadImage("images/track.jpg")
+  gameover_img=loadImage("images/over.png")
+  playagain_img=loadImage("images/play.png")
 }
 function setup() {
   createCanvas(1050,500);
 max = createSprite(80, 440, 50, 50);
 max.addAnimation("img", max_img)
+max.addImage("fall",maxfall_img)
 max.scale=0.8
+
+gameover=createSprite(525,230,20,20)
+gameover.visible=false
+gameover.addImage("gov",gameover_img)
+
+playagain=createSprite(525,370,15,15)
+playagain.visible=false
+playagain.addImage("pag",playagain_img)
 
 ground=createSprite(525,490,1050,20);
 ground.shapeColor="black"
@@ -41,31 +58,31 @@ boosterGroup=new Group()
 
 function draw() {
   background(bg_img); 
-  
-  if(keyDown("RIGHT_ARROW")){
-    max.velocityX=3;
-  }
-  if(keyWentUp("RIGHT_ARROW")){
-    max.velocityX=0;
-  }
-  if(keyDown("UP_ARROW")){
-    max.velocityY=-2;
-  }
-  if(keyWentUp("UP_ARROW")){
-    max.velocityY=2;
-  }
-  if(max.isTouching(maskGroup)){
-    count=count+1
-  }
-  if(max.isTouching(sanitizerGroup)){
-    count=count+1
-  }
-  if(max.isTouching(boosterGroup)){
-    count=count+2
-  }
-   
+
   max.collide(ground)
 
+  if(gameState===PLAY){
+    if(keyDown("RIGHT_ARROW")){
+      max.velocityX=2;
+    }
+    if(keyWentUp("RIGHT_ARROW")){
+      max.velocityX=0;
+    }
+    if(keyDown("UP_ARROW")){
+      max.velocityY=-2;
+    }
+    if(keyWentUp("UP_ARROW")){
+      max.velocityY=2;
+    }
+    if(max.isTouching(maskGroup)){
+      count=count+1
+    }
+    if(max.isTouching(sanitizerGroup)){
+      count=count+1
+    }
+    if(max.isTouching(boosterGroup)){
+      count=count+2
+    }
   spawnGerm1()
   spawnGerm2()
   spawnMask()
@@ -82,6 +99,34 @@ function draw() {
   if(max.isTouching(germ2Group)){
     max.x=80
     healthmeter=healthmeter-1
+  }
+  }
+ 
+  else if(gameState===END){
+    if(healthmeter===0){
+      max.changeImage("fall",maxfall_img)
+      max.velocityX=0
+      germ1Group.destroyEach()
+      germ2Group.destroyEach()
+      maskGroup.destroyEach()
+      sanitizerGroup.destroyEach()
+      boosterGroup.destroyEach()
+      gameover.visible=true
+      playagain.visible=true
+     }
+  }
+  
+  if(mousePressedOver(playagain)){
+   gameover.visible=false
+   playagain.visible=false
+   max.changeImage("img",max_img)
+   max.velocityX=2
+   spawnGerm1()
+   spawnGerm2()
+   spawnMask()
+   spawnSanitizer()
+   spawnBooster()
+
   }
 
   drawSprites();
