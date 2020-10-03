@@ -14,7 +14,7 @@ var maskGroup
 var sanitizerGroup
 var boosterGroup
 var count=0
-var healthmeter=200
+var healthmeter=100
 var PLAY=1
 var END=0
 var gameState=PLAY
@@ -48,6 +48,7 @@ playagain.addImage("pag",playagain_img)
 
 ground=createSprite(525,490,1050,20);
 ground.shapeColor="black"
+
 germ1Group= new Group()
 germ2Group= new Group()
 maskGroup= new Group()
@@ -58,16 +59,17 @@ boosterGroup=new Group()
 
 function draw() {
   background(bg_img); 
-
   max.collide(ground)
 
+  if(keyDown("RIGHT_ARROW")){
+    max.velocityX=2;
+  }
+  if(keyWentUp("RIGHT_ARROW")){
+    max.velocityX=0;
+  }
+
   if(gameState===PLAY){
-    if(keyDown("RIGHT_ARROW")){
-      max.velocityX=2;
-    }
-    if(keyWentUp("RIGHT_ARROW")){
-      max.velocityX=0;
-    }
+    
     if(keyDown("UP_ARROW")){
       max.velocityY=-2;
     }
@@ -100,32 +102,35 @@ function draw() {
     max.x=80
     healthmeter=healthmeter-1
   }
+  if(healthmeter===0){
+    gameState=END
   }
- 
-  else if(gameState===END){
-    if(healthmeter===0){
+  }
+  if(gameState===END){
       max.changeImage("fall",maxfall_img)
       max.velocityX=0
-      germ1Group.destroyEach()
-      germ2Group.destroyEach()
-      maskGroup.destroyEach()
-      sanitizerGroup.destroyEach()
-      boosterGroup.destroyEach()
+      germ1Group.setVelocityXEach(0)
+      germ2Group.setVelocityXEach(0)
+      maskGroup.setVelocityXEach(0)
+      sanitizerGroup.setVelocityXEach(0)
+      boosterGroup.setVelocityXEach(0)
       gameover.visible=true
       playagain.visible=true
-     }
+     
   }
   
   if(mousePressedOver(playagain)){
    gameover.visible=false
    playagain.visible=false
+   gameState=PLAY
+   germ1Group.destroyEach()
+   germ2Group.destroyEach()
+   maskGroup.destroyEach()
+   sanitizerGroup.destroyEach()
+   boosterGroup.destroyEach()
    max.changeImage("img",max_img)
-   max.velocityX=2
-   spawnGerm1()
-   spawnGerm2()
-   spawnMask()
-   spawnSanitizer()
-   spawnBooster()
+   count=0
+   healthmeter=200
 
   }
 
